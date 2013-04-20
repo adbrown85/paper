@@ -1,0 +1,446 @@
+\documentclass[12pt]{article}
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+
+\begin{document}
+
+% Use an empty page style for the title and abstract
+\pagestyle{empty}
+
+% =====
+% Title
+% =====
+\title{Hardware-accelerated Rendering of Intersecting Volumes using Boolean Operations}
+\author{Andrew Brown \and Joe Geigel}
+\date{\small{Rochester Institute of Technology}}
+\maketitle
+
+% ========
+% Abstract
+% ========
+\begin{abstract}
+Rendering intersecting volumes is difficult because the renderer must alternate
+between sampling from each volume to achieve the correct blending.  Methods for
+rendering an arbitrary number of intersecting volumes on the GPU have been
+developed, but they can require a significant amount of effort to implement.
+This paper investigates implementing the simplest case, where two volumes
+overlap, using familiar boolean operations and a traditional graphics library.
+\end{abstract}
+
+% Switch back to a plain page style for the rest of the paper
+\pagestyle{plain}
+
+% ============
+% Introduction
+% ============
+\section{Introduction}
+
+For many years the computing community has created software to visualize data
+from medical and scientific equipment.  Normally the data is returned as a
+three-dimensional grid of values.  This grid is called a volume, and the
+individual values are named voxels, similar to how the elements of a picture are
+called pixels.
+
+Volumes produced by such equipment often become quite large, and at first
+computers had a difficult time displaying the data in real time.  Early work in
+the field thus focused on ways to speed up the process while still maintaining
+the highest image quality possible.  In fact, a handful of different methods
+with their own unique alterations were tried in the hopes of delivering better
+images at a higher frame rate.  In addition, some initial attempts were made at
+providing users with better information by simultaneously displaying multiple
+volumes in order to place data in its appropriate context.
+
+Of course, as years passed, new technologies developed and it was not long
+before high-level, programmable shading languages enabled researchers to utilize
+the significant processing power of the main processor on video cards, commonly
+called the graphics processing unit, or GPU.  Extremely proficient at performing
+similar operations on a large amount of data, GPUs accelerated volume
+visualization software tremendously.  Hardware-accelerated implementations of
+both the classic slicing method and the high-quality ray-casting method were
+developed quickly for single volumes.
+
+With much of the original performance concerns alleviated, and more and more
+data being collected from several different sources, researchers are again
+looking at ways to effectively display multiple volumes simultaneously.  A few
+different methods have been developed for rendering an arbitrary number of
+volumes using hardware acceleration, but they can be problematic to implement,
+rely on general-purpose GPU programming, or both.
+
+For those reasons, in this paper we examine techniques for rending two volumes
+using simple boolean operations.  Although limited, we hope the techniques
+presented will be more approachable to software engineers faced with
+implementing such technologies, and could help direct future efforts in volume
+rendering.
+
+The rest of the paper begins with background information and a more thorough
+discussion of previous work in the field.  It then moves on to technologies
+available for GPU programming.  Finally, a detailed plan of our proposed work
+and its projected implementation is given.
+
+% ==========
+% Background
+% ==========
+\section{Background}
+
+Understanding the techniques presented in this paper is heavily dependent on
+knowing some key concepts of how a video card renders three-dimensional objects
+by use of a rendering pipeline.  This pipeline is very similar to an assembly
+line, where data elements are passed from stage to stage and no element stays in
+a stage any longer than it needs to.  It is this unique structure that gives the
+video card its speed, since operations are optimized to be performed on a large
+amount of data at the same time.
+
+To get the pipeline started, the application feeds vertices to the video card’s
+first stage.  So the video card knows which vertices are connected, the
+application also provides binding information describing which vertices make up
+which polygons.  At this point, the video card’s first stage begins constructing
+the polygons and performs some preparatory operations on the vertices, such as
+calculating the normal vectors used for illumination and assigning texture
+coordinates.  As soon as a polygon is finished, it is immediately passed onto
+the next stage, which begins rasterizing the polygons into temporary pixels
+called fragments.  The fragments are passed along to the last stage, which
+shades the them, decides which ones to discard, and displays those that remain
+as pixels.
+
+With the advent of programmable pipelines, developers can now replace some of
+the fixed functionality of the pipeline with special programs, called shaders,
+that execute custom code, in some cases even making the pipeline do things it
+was not designed to do.  The first part of the pipeline that can be replaced is
+at the beginning where vertices are prepared for the following stages.  These
+shaders are called vertex shaders since they operate on the vertices themselves.
+Vertex shaders are normally used to change the position of the vertex, alter its
+texture coordinates, or perhaps modify its normal vector.  The second part of
+the pipeline that can be replaced is towards the end, where fragments are being
+shaded.  Fragment shaders generally change the color of the object or how it is
+illuminated.  Many times they look up values stored in textures, which are
+generally one, two, or three dimensional images.
+
+Since there are always many fragments generated in rendering an image, designers
+have devoted much of the hardware to processing them.  Therefore fragment
+shaders are traditionally used to perform the bulk of the work in any
+application using a shading language for hardware acceleration.  Because they
+are used so much, it is important to note that a fragment’s location is
+generally given in normalized texture coordinates.  These coordinates range from
+0.0 to 1.0 according to the bounds of the polygon, with 0.0 being one extreme
+and 1.0 being the other.
+
+% =============
+% Previous Work
+% =============
+\section{Previous Work}
+
+\subsection{Overview}
+
+The first major breakthrough in volume rendering came with \cite{Levoy88}.
+Previous techniques tried to use actual geometry to approximate the surfaces of
+volumetric data.  A major problem with these approaches was determining whether
+parts of the volume were actually part of a surface or not.  Instead of fitting
+geometry to the volume, Levoy’s method samples the volume directly and uses the
+resulting vertices to texture a series of polygons aligned with the viewing
+direction.  Commonly referred to as slicing, this method was a significant
+improvement in accuracy.  Although over twenty years old, sampling the volume
+directly has remained the basis for most volume rendering techniques today and
+has been termed Direct Volume Rendering.
+
+Levoy made another significant contribution two years later with a paper
+\cite{Levoy90} describing Direct Volume Rendering using ray-casting.  Because
+many times volumes have large spaces that do not make a difference in the final
+image, Levoy focused on having rays skip those spaces by consulting a
+hierarchical space division technique known as an octree.  This method has
+become known as Empty Space Skipping and is still very important to ray-casting
+implementations.
+
+Not long after, Danskin and Hanrahan \cite{Danskin92} improved on Levoy’s work
+by integrating another form of acceleration into ray-casting.  Called early ray
+termination, the procedure stops the ray if its opacity ever reaches a level
+where further samples will not change the final image.  Fairly straightforward
+and easy to implement, early ray termination is a staple for most applications.
+
+In 1994 Cullip and Neumann \cite{Cullip94} took another look at the slicing
+method.  They primarily compared different methods for orienting the textured
+polygons of the slicing method.  The first method oriented the polygons with the
+object-space axes.  The other aligned them in image-space.  The former requires
+reorienting the polygons as the viewport changes, but the latter must be clipped
+to object space requiring a transformation with the inverse viewing matrix.  It
+was further suggested that the image-space method would require more passes.
+Another important contribution was using a progressive rendering algorithm while
+the user is rotating the scene.
+
+Jumping ahead, in \cite{Leu99} Leu and Chen developed a practical platform for
+rendering multiple volumes featuring a two-layer approach that separated volume
+data from instances of that data.  Consideration for memory management in the
+case that all the data did not fit into memory was made, although intersecting
+volumes were not considered.
+
+A key source for vital information concerning volume ray-casting with high-level
+programmable shading languages came with \cite{Kruger03}.  Kruger demonstrated
+that an implementation using fragment shaders and featuring early ray
+termination can achieve significant performance gains.  Much of the credit was
+given to new features of graphics APIs, including accessing multiple textures,
+rendering to arbitrary textures, and replacing depth buffer values.  His
+implementation with early-ray termination and ray-casting generally outperformed
+other methods by a factor of three and normal ray-casting by a factor of four
+for most data sets.
+
+A comprehensive review of the slicing method applied to the GPU can be obtained
+from \cite{Ikits04}.  Ikits describes the techniques required for creating the
+proxy geometry, texturing the slices using NVIDIA’s Cg shading language, and
+using the gradient for local and global illumination models.
+
+\cite{Ruijters06} examined bottlenecks in hardware and devised a two-staged
+method for balancing between them.  The first stage breaks the volume into
+rectangular bricks, getting rid of empty ones and relieving a bottleneck with
+texture memory and the memory bus.  The second stage meanwhile helps in
+eliminating details that will not be rendered during rasterization.
+
+Recent work in the field has focused on visualizing multiple volumes.  This
+ability helps those that view the data to judge the information in context to
+other relevant data.
+
+Grimm \cite{Grimm04} presented techniques to render multiple volumes with the
+CPU.
+
+In particular Roßler et.\ al.\ \cite{Rossler06} allowed MRI scans of the human
+brain to be viewed simultaneously with the skull by using the slicing method.
+An important feature was being able to manipulate each model, in regards to
+clipping and opacity, independently of the other.
+
+Later \cite{Rossler08} rendered multiple volumes using the ray-casting method
+developed by Kruger.  Rather than render all the volumes at once, which could
+sample a large amount of empty space, his technique splits the scene into
+multiple regions and generates shaders dynamically.
+
+Some researchers have moved to using general-purpose technologies like CUDA or
+OpenCL to better leverage the GPU for multi-volume rendering.  The
+implementation by Kainz et. al. \cite{Kainz09} was slower for simple cases, but could
+render more complicated scenes.
+
+\subsection{Slicing}
+
+The classic method for performing volume rendering on the GPU is called slicing.
+Slicing uses polygons perpendicular to the viewing direction, called proxy
+polygons or slices, to sample the volume at regular intervals.  When the entire
+volume has been sampled, the slices are composited together to form the final
+image.  Because of its relative simplicity, slicing generally yields the fastest
+frame rates of all volume rendering methods.
+
+The first step in slicing is to transform the coordinates of the volume’s
+bounding box so that they are in terms of the viewing direction.  This is
+necessary because the coordinates of the bounding box are stored relative to
+itself, but slicing needs the coordinates after any rotations or translations
+have been applied.  Luckily, handling this transformation is as simple as
+applying the model-view matrix.
+
+Next, the slices are made by generating planes from the closest z position of
+the bounding box to the farthest.  The planes are made at regular intervals
+according to the image quality desired.  Each resulting plane is tested for
+intersections with each edge of the bounding box using the plane-line
+intersection test formula.  Any resulting intersection points that fall within
+the bounds of the polygon are then sorted into a clockwise or counterclockwise
+direction to form the proxy polygon corresponding to that plane.
+
+Now the slices are ready to sample the volume.  A fragment shader is responsible
+for performing this operation, looking up voxels based on the texture
+coordinates of fragments generated from rendering the slices.  As long as the
+vertices of the slices were given texture coordinates that correspond with how
+the volume is indexed, the fragment shader’s job is simple.  Except for some
+rounding and interpolation, the texture coordinate of the fragment can be used
+to access the volume directly, returning a value for that position.  The value
+is fed into a transfer function and the resulting color is blended into the
+framebuffer.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{slicing-aligned.pdf}
+\caption{Three slices through aligned volume.}
+\label{slicing-aligned}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{slicing-rotated.pdf}
+\caption{Three slices rotated through volume.}
+\label{slicing-rotated}
+\end{figure}
+
+Figures \ref{slicing-aligned} and \ref{slicing-rotated} are illustrations
+adapted from \cite{Ikits04} showing the process of generating and texturing the
+slices.  The first figure shows a trivial example where the volume is aligned
+with the viewing direction.  Slices generated are simply rectangles the same
+size of the volume.  The volume in the second figure however has been rotated by
+the user, and thus the slices are more irregular shapes.
+
+Note that we take the approach of keeping the viewpoint fixed.  Instead of
+seeing the viewpoint as rotating around the volume, consider the volume to be
+rotating in front of the viewpoint.  We believe this methodology is easier to
+understand since the view-space axes are then always aligned with world-space.
+
+\section{Ray Casting}
+
+Ray-casting is an alternate method for performing volume visualization.  Along
+with being quite simple and elegant, it is generally considered to produce the
+highest-quality images, and has thus become quite popular.  Although usually
+slower than slicing, some acceleration methods have been developed that make its
+speed quite competitive.
+
+In traditional ray-casting, as in implementations not associated with volume
+rendering, rays are projected from the viewpoint through a pixel grid located in
+front of the scene.  A ray is created for each pixel in the grid, and each
+resulting ray is tested for intersections with every object in the scene.  The
+color of the closest intersecting object is then stored as the color for the
+corresponding pixel in the grid.  Once all the rays have finished, the values in
+the grid are copied to the frame-buffer.  Figure \ref{traditional-ray-casting}
+shows an overhead model of the traditional ray-casting process.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{traditional-ray-casting.pdf}
+\caption{Traditional ray-casting with pixel grid.}
+\label{traditional-ray-casting}
+\end{figure}
+
+To apply ray-casting to volume rendering with a high-level programmable shading
+language, \cite{Kruger03} adapted the concept to use fragment shaders on a
+volume’s bounding box.  Instead of casting rays through a pixel grid, each
+fragment generated by rendering the bounding boxes creates its own ray.  The
+rays start at the viewpoint and passes through the fragment’s location.  Any
+volumes that intersect the ray are sampled at regular intervals along it by
+applying the inverse model view matrix to the points and using them as indices
+into the volume.  A transfer function converts the values to colors, and each is
+blended into the framebuffer at the fragment’s position.  Figure
+\ref{fragment-ray-casting} gives a depiction of the process, with green circles
+representing fragments.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{fragment-ray-casting.pdf}
+\caption{Ray-casting by fragments.}
+\label{fragment-ray-casting}
+\end{figure}
+
+The simplest acceleration technique inherent to ray-casting is early ray
+termination, which stops calculation when a certain threshold has been reached
+while marching along the ray.  Fairly intuitive, early ray termination works
+because if the data has already added up to be opaque, values behind it no
+longer make a difference.
+
+Early ray termination is not the only way to accelerate ray-casting. A more
+complicated technique is called empty space skipping.  Pioneered by Marc Levoy
+in 1990 \cite{Levoy90}, empty space skipping is traditionally done with an
+octree.
+
+An octree is a tree data structure used to divide a three-dimensional space,
+with each node representing a section of that space.  The first node in the
+tree, the root, is the size of the entire space, and as the name implies, it is
+broken up into eight smaller sections.  These sections are added as children to
+the root node, and then they are split into eight smaller sections themselves.
+The process continues until the sections reach a size that the application is
+comfortable working with.
+
+With the sizes set, the nodes at the bottom of the tree, called leaf nodes, set
+various characteristics based on the objects inside their section of the space.
+Nodes in the rest of the tree then use the characteristics of their eight
+children nodes to set their own characteristics.  In this way an octree holds
+information about the space on many different levels of detail, which an
+application can use to intelligently navigate and make decisions about the
+space.  Figure \ref{octree} shows the first three levels of an octree.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{octree.pdf}
+\caption{The first three levels of an octree.}
+\label{octree}
+\end{figure}
+
+For volume rendering, an octree represents the space of the volume, and its
+nodes store whether that section of the space is empty or not.  A leaf node,
+which has a width equal to twice the distance between two voxels, is determined
+to be empty if all of the eight voxels at its corners are below a certain
+threshold.  Larger nodes meanwhile are empty if the eight nodes below them are
+all empty.  With an octree of this sort in place, rays can potentially save
+themselves a lot of work by checking the nodes in the octree before sampling,
+starting with the root and working its way down.  If the ray ever encounters an
+empty section, it can skip over all the points along the ray that would fall in
+that section.
+
+% ==========
+% Approaches
+% ==========
+\section{Approaches}
+
+Two different approaches.
+
+% Boolean AND
+
+The first approach uses a Boolean AND operation combined with depth-buffer
+masking.  It is mostly GPU-based, only requiring that the Boolean operation be
+performed on the CPU.  While there is relatively less work on the CPU, it does
+require a significant amount of passes.  The pseudocode for the approach is
+shown below.  Note that early Z-kill should prevent fragments that are masked
+off from being processed by the fragment shader.
+
+\begin{enumerate}
+\item Render fragments behind the intersection into a framebuffer
+\item Render intersection into another framebuffer
+\item Render fragments in front of the intersection to the screen
+\item Mask off depth buffer with depths of intersection's front faces
+\item Render everything else, sorted by depth, to the screen
+\end{enumerate}
+
+% Boolean XOR
+
+The second approach uses a Boolean AND operation together with a Boolean XOR.
+It is mostly CPU-based, since it requires both Boolean operations to be done on
+the CPU.  The extra work on the CPU results in less rendering passes, however.
+The pseudocode for the approach is shown below.
+
+\begin{enumerate}
+\item Render pieces from Boolean XOR behind intersection to framebuffer
+\item Render intersection using Boolean AND to framebuffer
+\item Render pieces from Boolean XOR in front of intersection to screen
+\end{enumerate}
+
+% ==============
+% Implementation
+% ==============
+\section{Implementation}
+
+The two approaches were implemented using OpenGL with C++.  To ensure results
+are relevant to current and future applications, we used only the core profile
+of OpenGL 3.  In other words, no deprecated functionality from OpenGL 2 was
+used.
+
+To facilitate the process, a handful of general-purpose graphics libraries were
+developed.  At the lowest levels are a simple 3D mathematics library and a
+library providing thin C++ wrappers around the components already in OpenGL.
+Above that, another library provides additional utilities for working with
+OpenGL, including one for loading volumetric data as a texture.  At the highest
+level is a library providing a simple render graph that can be used to rapidly
+prototype OpenGL applications.  Similar to SVG, the render graph can be written
+in XML so scenes can easily be saved, reloaded, and shared.  All of the
+libraries can be compiled as shared libraries using GCC on Linux and Mac OS X.
+
+From there an application was created to view the resulting scenes.  It can
+rotate the camera around the scene, as well as select objects in the scene and
+drag them around.  It shows the current frame rate so we can evaluate the
+performance of the scenes.  Some scene graph components that are not general
+enough to be in the library were created at the application level.
+
+% ==========
+% Evaluation
+% ==========
+\section{Evaluation}
+
+How fast they can be rendered?
+How easy they were to implement?
+
+% ============
+% Bibliography
+% ============
+
+\bibliographystyle{alpha}
+\bibliography{paper.bib}
+
+\end{document}

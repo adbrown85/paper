@@ -527,6 +527,9 @@ processed by the fragment shader at all because of early Z-kill.
 \subsection{Boolean AND with Boolean XOR}
 
 The second approach uses a Boolean AND operation together with a Boolean XOR.
+Here the idea is to break up both volumes into pieces around the intersection.
+All the pieces behind the intersection are rendered first, then the intersection
+itself, and then all the pieces in front of the intersection.
 
 \begin{enumerate}
 \item Render pieces from Boolean XOR behind intersection to framebuffer

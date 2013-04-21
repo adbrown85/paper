@@ -528,15 +528,15 @@ processed by the fragment shader at all because of early Z-kill.
 
 The second approach uses a Boolean AND operation together with a Boolean XOR.
 
-It is mostly CPU-based, since it requires both Boolean operations to be done on
-the CPU.  The extra work on the CPU results in less rendering passes, however.
-The pseudocode for the approach is shown below.
-
 \begin{enumerate}
 \item Render pieces from Boolean XOR behind intersection to framebuffer
 \item Render intersection using Boolean AND to framebuffer
 \item Render pieces from Boolean XOR in front of intersection to screen
 \end{enumerate}
+
+It is mostly CPU-based, since it requires both Boolean operations to be done on
+the CPU.  The extra work on the CPU results in less rendering passes, however.
+The pseudocode for the approach is shown below.
 
 % ==============
 % Implementation

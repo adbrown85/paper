@@ -373,7 +373,7 @@ that section.
 
 Two different approaches.
 
-% Boolean AND
+\subsection{Boolean AND with Depth Buffer Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer
 masking.  It is mostly GPU-based, only requiring that the Boolean operation be
@@ -390,7 +390,7 @@ off from being processed by the fragment shader.
 \item Render everything else, sorted by depth, to the screen
 \end{enumerate}
 
-% Boolean XOR
+\subsection{Boolean AND with Boolean XOR}
 
 The second approach uses a Boolean AND operation together with a Boolean XOR.
 It is mostly CPU-based, since it requires both Boolean operations to be done on

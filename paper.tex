@@ -527,6 +527,7 @@ processed by the fragment shader at all because of early Z-kill.
 \subsection{Boolean AND with Boolean XOR}
 
 The second approach uses a Boolean AND operation together with a Boolean XOR.
+
 It is mostly CPU-based, since it requires both Boolean operations to be done on
 the CPU.  The extra work on the CPU results in less rendering passes, however.
 The pseudocode for the approach is shown below.

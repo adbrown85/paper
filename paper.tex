@@ -384,6 +384,20 @@ with the intersection, rendering the cubes behind it, the intersection itself,
 and then the cubes in front of it.  Then the area of the intersection is masked
 off and everything else is drawn depth-sorted.
 
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{boolean-and.pdf}
+\caption{
+Top down view of rendering intersecting volumes using the Boolean AND with depth
+buffer masking approach.  First the part of the volume directly behind the
+intersection, colored red, is rendered.  Next the intersection, colored green,
+is rendered.  Then the the part of the volume directly in front of the
+intersection, colored blue, is rendered.  Finally the depth buffer is masked off
+using the intersection, and everything else, colored yellow, is rendered.
+}
+\label{boolean-and}
+\end{figure}
+
 It is mostly GPU-based, only requiring that the Boolean operation be performed
 on the CPU.  While there is relatively less work on the CPU, it does require a
 significant amount of passes.
@@ -530,6 +544,19 @@ The second approach uses a Boolean AND operation together with a Boolean XOR.
 Here the idea is to break up both volumes into pieces around the intersection.
 All the pieces behind the intersection are rendered first, then the intersection
 itself, and then all the pieces in front of the intersection.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{boolean-xor.pdf}
+\caption{
+Rendering intersecting volumes using the Boolean AND with Boolean XOR approach.
+First the pieces behind the intersection, colored red, are rendered.  Next the
+intersection, colored green, is rendered.  Then the pieces in front of the
+intersection, colored blue, are rendered.  A final pass renders the results to
+the screen.
+}
+\label{boolean-xor}
+\end{figure}
 
 Like the first approach, the first step is to set up the textures.  There are
 two textures for the volumes, two to store the texture coordinates of the back

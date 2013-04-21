@@ -398,6 +398,142 @@ The pseudocode for the approach is shown below.
 \item Render everything else, sorted by depth, to the screen
 \end{enumerate}
 
+The first step in this approach is to bind all the textures.  There are two for
+the volumes, two for storing the texture coordinates of the back faces of the
+cubes, and one for storing results between passes.  The last three textures will
+be used with external framebuffers, so they should have a width and height at
+least as big as the window.
+
+\begin{Verbatim}[fontsize=\small]
+  <texture id="first-volume-texture" file="first.vlb">
+  <texture id="second-volume-texture" file="second.vlb">
+  <texture id="primary-coords-texture" width="768" height="768">
+  <texture id="secondary-coords-texture" width="768" height="768">
+  <texture id="results-texture" width="768" height="768">
+\end{Verbatim}
+
+Next the volumes behind the intersection are rendered into the results texture.
+Because we want the part of the volume behind the intersection we first render
+the texture coordinates of the back faces of the cubes into a framebuffer, then
+render the back faces of the intersection as per \cite{Kruger03}.  Note in the code
+snippet below we only show the first volume, hide where we set the uniform
+variables in the shader program for brevity, and give the intersection an ID so
+it can be redrawn later.
+
+\begin{Verbatim}[fontsize=\small]
+  <cull faces="front" />
+  <framebuffer>
+    <attachment usage="color" link="primary-coords-texture" />
+    <use program="primary-coords-program">
+      <instance of="cube-1-group" />
+    </use>
+  </framebuffer>
+  <framebuffer>
+    <attachment usage="color" link="results-texture" />
+    <use program="first-pass-program">
+      <booleanAnd id="intersection" of="cube-1 cube-2" />
+    </use>
+  </framebuffer>
+\end{Verbatim}
+
+From there the intersection itself is rendered.  Because the intersection needs
+to alternate between samples from both volumes, we have to render the back face
+coordinates into two different textures, and then make them both available to
+the shader program that renders the intersection.
+
+\begin{Verbatim}[fontsize=\small]
+  <cull faces="front" />
+  <framebuffer>
+    <attachment usage="color" link="coords-texture-1" />
+    <use program="primary-coords-program">
+      <instance of="intersection" />
+    </use>
+  </framebuffer>
+  <framebuffer>
+    <attachment usage="color" link="coords-texture-2" />
+    <use program="secondary-coords-program">
+      <instance of="intersection" />
+    </use>
+  </framebuffer>
+  <cull faces="back" />
+  <framebuffer>
+    <attachment usage="color" link="third-pass-texture" />
+    <use program="third-pass-program">
+      <uniform name="CoordsTexture1" link="coords-texture-1" />
+      <uniform name="CoordsTexture2" link="coords-texture-2" />
+      <instance of="intersection" />
+    </use>
+  </framebuffer>
+\end{Verbatim}
+
+After that the parts of the volumes in front of the intersection are rendered to
+the results texture.  We have the shader program set the depth of the fragments
+generated to the lowest value to effectively mask off that part of the screen.
+
+\begin{Verbatim}[fontsize=\small]
+  <cull mode="back" />
+  <framebuffer>
+    <attachment usage="color" link="coords-texture-1" />
+    <use program="primary-coords-program">
+      <uniform name="MVPMatrix" usage="modelviewprojection" />
+      <instance of="cube-1" />
+    </use>
+  </framebuffer>
+  <framebuffer>
+    <attachment usage="color" link="results-texture" />
+    <use program="fourth-pass-program">
+      <instance of="intersection" />
+    </use>
+  </framebuffer>
+\end{Verbatim}
+
+Finally we render the two volumes again depth-sorted with blending enabled and
+the depth function set to \emph{LESS}.  Since on the previous step we masked off
+the area of the screen with the intersection, the fragments in those parts will
+just be discarded.  In fact, on most modern video cards they will not even be
+processed by the fragment shader at all because of early Z-kill.
+
+\begin{Verbatim}[fontsize=\small]
+  <blend enabled="true" />
+  <depth function="less" />
+  <sort>
+    <group>
+      <framebuffer>
+        <attachment usage="color" link="primary-coords-texture" />
+        <use program="primary-coords-program">
+          <cull mode="front" />
+          <instance of="cube-1-group" />
+        </use>
+      </framebuffer>
+      <use program="kruger-program">
+        <cull faces="back" />
+        <group id="cube-1-group">
+          <translate x="-1">
+            <cube id="cube-1" />
+          </translate>
+        </group>
+      </use>
+    </group>
+    <group>
+      <framebuffer>
+        <attachment usage="color" link="coords-texture-2" />
+        <use program="primary-coords-program">
+          <cull mode="front" />
+          <instance of="cube-2-group" />
+        </use>
+      </framebuffer>
+      <use program="kruger-program">
+        <cull mode="back" />
+        <group id="cube-2-group">
+          <translate x="+1">
+            <cube id="cube-2" />
+          </translate>
+        </group>
+      </use>
+    </group>
+  </sort>
+\end{Verbatim}
+
 Note that early Z-kill should prevent fragments that are masked off from being
 processed by the fragment shader.
 

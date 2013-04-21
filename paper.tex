@@ -388,16 +388,6 @@ It is mostly GPU-based, only requiring that the Boolean operation be performed
 on the CPU.  While there is relatively less work on the CPU, it does require a
 significant amount of passes.
 
-The pseudocode for the approach is shown below.
-
-\begin{enumerate}
-\item Render fragments behind the intersection into a framebuffer
-\item Render intersection into another framebuffer
-\item Render fragments in front of the intersection to the screen
-\item Mask off depth buffer with depths of intersection's front faces
-\item Render everything else, sorted by depth, to the screen
-\end{enumerate}
-
 The first step in this approach is to bind all the textures.  There are two for
 the volumes, two for storing the texture coordinates of the back faces of the
 cubes, and one for storing results between passes.  The last three textures will

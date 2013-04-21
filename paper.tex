@@ -371,7 +371,10 @@ that section.
 % ==========
 \section{Approaches}
 
-Two different approaches.
+We take two different approaches to rendering intersecting volumes using boolean
+operations.  The boolean operations involved are AND and XOR.  AND takes the
+intersection of two shapes, while XOR, meaning exclusive OR, takes everything
+but the intersection.
 
 \subsection{Boolean AND with Depth Buffer Masking}
 

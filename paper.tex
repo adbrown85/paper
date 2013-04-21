@@ -531,12 +531,6 @@ Here the idea is to break up both volumes into pieces around the intersection.
 All the pieces behind the intersection are rendered first, then the intersection
 itself, and then all the pieces in front of the intersection.
 
-\begin{enumerate}
-\item Render pieces from Boolean XOR behind intersection to framebuffer
-\item Render intersection using Boolean AND to framebuffer
-\item Render pieces from Boolean XOR in front of intersection to screen
-\end{enumerate}
-
 Like the first approach, the first step is to set up the textures.  There are
 two textures for the volumes, two to store the texture coordinates of the back
 faces, and one to hold results between passes.  The textures to store the

@@ -382,8 +382,7 @@ The first approach uses a Boolean AND operation combined with depth-buffer
 masking.  It is mostly GPU-based, only requiring that the Boolean operation be
 performed on the CPU.  While there is relatively less work on the CPU, it does
 require a significant amount of passes.  The pseudocode for the approach is
-shown below.  Note that early Z-kill should prevent fragments that are masked
-off from being processed by the fragment shader.
+shown below.
 
 \begin{enumerate}
 \item Render fragments behind the intersection into a framebuffer
@@ -392,6 +391,9 @@ off from being processed by the fragment shader.
 \item Mask off depth buffer with depths of intersection's front faces
 \item Render everything else, sorted by depth, to the screen
 \end{enumerate}
+
+Note that early Z-kill should prevent fragments that are masked off from being
+processed by the fragment shader.
 
 \subsection{Boolean AND with Boolean XOR}
 

@@ -379,7 +379,10 @@ but the intersection.
 \subsection{Boolean AND with Depth Buffer Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer
-masking.
+masking.  The basic idea is to mask off everything but the area on the screen
+with the intersection, rendering the cubes behind it, the intersection itself,
+and then the cubes in front of it.  Then the area of the intersection is masked
+off and everything else is drawn depth-sorted.
 
 It is mostly GPU-based, only requiring that the Boolean operation be performed
 on the CPU.  While there is relatively less work on the CPU, it does require a

@@ -491,7 +491,7 @@ the results texture.  We have the shader program set the depth of the fragments
 generated to the lowest value to effectively mask off that part of the screen.
 
 \begin{Verbatim}[fontsize=\small]
-  <cull mode="back" />
+  <cull faces="back" />
   <framebuffer>
     <attachment usage="color" link="coords-texture-1" />
     <use program="primary-coords-program">
@@ -521,7 +521,7 @@ processed by the fragment shader at all because of early Z-kill.
       <framebuffer>
         <attachment usage="color" link="coords-texture-1" />
         <use program="primary-coords-program">
-          <cull mode="front" />
+          <cull faces="front" />
           <instance of="cube-1-group" />
         </use>
       </framebuffer>
@@ -538,12 +538,12 @@ processed by the fragment shader at all because of early Z-kill.
       <framebuffer>
         <attachment usage="color" link="coords-texture-2" />
         <use program="primary-coords-program">
-          <cull mode="front" />
+          <cull faces="front" />
           <instance of="cube-2-group" />
         </use>
       </framebuffer>
       <use program="kruger-program">
-        <cull mode="back" />
+        <cull faces="back" />
         <group id="cube-2-group">
           <translate x="+1">
             <cube id="cube-2" />

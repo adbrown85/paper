@@ -25,9 +25,10 @@
 Rendering intersecting volumes is difficult because the renderer must alternate
 between sampling from each volume to achieve the correct blending.  Methods for
 rendering an arbitrary number of intersecting volumes on the GPU have been
-developed, but they can require a significant amount of effort to implement.
-This paper investigates implementing the simplest case, where two volumes
-overlap, using familiar boolean operations and a traditional graphics library.
+developed, but they can require a large amount of geometry to be created every
+frame, or may be difficult or time-consuming to implement.  This paper
+investigates implementing the simplest case, where two volumes overlap, using
+familiar boolean operations and a traditional graphics library.
 \end{abstract}
 
 % Switch back to a plain page style for the rest of the paper

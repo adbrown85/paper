@@ -651,6 +651,14 @@ SVG, or Scalable Vector Graphics, the render graph can be written in XML so
 scenes can easily be saved, reloaded, and shared.  In addition, users are free
 to experiment with their scenes without ever recompiling the application.
 
+Core to RapidGL is the {\tt Node} class.  Nodes can override the {\tt visit}
+method to perform actions when the scene is traversed.  Most implementations
+perform any setup which requires other nodes the first time they are visited.
+For example, many nodes check for ancestors with specific types or search the
+scene for nodes with a specific ID.  Nodes can also register themselves as {\em
+listeners} of other nodes by implementing the {\tt NodeListener} interface and
+passing a pointer to the node's {\tt addNodeListener} method.
+
 All of the libraries can be compiled as shared libraries using GCC on Linux and
 Mac OS X.
 

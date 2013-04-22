@@ -694,6 +694,15 @@ the group it points to.  Complex behavior can be achieved with nested groups.
   </framebuffer>
 \end{Verbatim}
 
+The Boolean operations required by the two approaches were implemented as two
+separate nodes.  Currently both nodes take two cubes, which are assumed to be
+axis-aligned.  {\tt BooleanAndNode} finds the intersection of the two cubes by
+finding the minimums and maximums of the cubes in world space.  {\tt
+BooleanXorNode} does the same, but then uses a variation of the well-known
+Sutherland-Hodgman polyline-clipping algorithm to break up the cubes into pieces
+around the intersection.  Both nodes use the {\tt NodeListener} interface to
+only update their geometry when the cubes move.
+
 All of the libraries can be compiled as shared libraries using GCC on Linux and
 Mac OS X.
 

@@ -424,89 +424,66 @@ cubes, and one for storing results between passes.  The last three textures will
 be used with external framebuffers, so they should have a width and height at
 least as big as the window.
 
-\begin{Verbatim}[fontsize=\small]
-  <texture id="first-volume-texture" file="first.vlb">
-  <texture id="second-volume-texture" file="second.vlb">
-  <texture id="coords-texture-1" width="768" height="768">
-  <texture id="coords-texture-2" width="768" height="768">
-  <texture id="results-texture" width="768" height="768">
-\end{Verbatim}
+\begin{enumerate}
+  \item Bind volume textures
+  \item Bind textures to store texture coordinates
+  \item Bind texture to store results
+\end{enumerate}
 
 Next the part of the volume behind the intersection is rendered into the results
 texture.  To get just that part the back faces of the Boolean AND are used
-instead of the front faces of the cube.  Note in the code snippet below we omit
-the instructions for rendering the second volume and for setting uniform
-variables.  We also put the Boolean AND into a group so it can be redrawn later
-without duplicating the calculations or geometry.
+instead of the front faces of the cube.
 
-\begin{Verbatim}[fontsize=\small]
-  <cull faces="front" />
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <use program="primary-coords-program">
-      <instance of="cube-1-group" />
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <use program="first-pass-program">
-      <group id="intersection-group">
-        <booleanAnd of="cube-1 cube-2" />
-      </group>
-    </use>
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Cull front faces
+  \item Bind framebuffer with coordinates texture
+  \item Activate shader program for rendering texture coordinates
+  \item Draw cube behind intersection
+  \item Bind framebuffer with results texture
+  \item Activate shader program for rendering a volume
+  \item Draw Boolean AND of cubes
+\end{enumerate}
 
 From there the intersection itself is rendered.  Because the intersection needs
 to alternate between samples from both volumes, we have to render the back face
 coordinates into two different textures, and then make them both available to
 the shader program that renders the intersection.
 
-\begin{Verbatim}[fontsize=\small]
-  <cull faces="front" />
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <use program="primary-coords-program">
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-2" />
-    <use program="secondary-coords-program">
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-  <cull faces="back" />
-  <framebuffer>
-    <attachment usage="color" link="third-pass-texture" />
-    <use program="third-pass-program">
-      <uniform name="CoordsTexture1" link="coords-texture-1" />
-      <uniform name="CoordsTexture2" link="coords-texture-2" />
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Cull front faces
+  \item Bind framebuffer with first coordinates texture
+  \item Activate shader program for rendering primary texture coordinates
+  \item Draw Boolean AND of cubes
+  \item Bind framebuffer with second coordinates texture
+  \item Activate shader program for rendering secondary texture coordinates
+  \item Draw Boolean AND of cubes
+  \item Cull back faces
+  \item Bind framebuffer with results texture
+  \item Activate shader program for rendering volume
+  \item Draw Boolean AND of cubes
+\end{enumerate}
 
 After that the part of the volume in front of the intersection is rendered to
-the results texture.  We have the shader program set the depth of the fragments
-generated to the lowest value to effectively mask off that part of the screen.
+the results texture.
 
-\begin{Verbatim}[fontsize=\small]
-  <cull faces="back" />
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <use program="primary-coords-program">
-      <uniform name="MVPMatrix" usage="modelviewprojection" />
-      <instance of="cube-1-group" />
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <use program="fourth-pass-program">
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Cull back faces
+  \item Bind framebuffer with coordinates texture
+  \item Activate shader program for rendering primary texture coordinates
+  \item Draw cube in front of intersection
+  \item Bind framebuffer with results texture
+  \item Activate shader program for rendering volume
+  \item Draw Boolean AND of cubes
+  \item Mask off depth buffer
+\end{enumerate}
+
+The area of the screen with the intersection should be masked off so that
+nothing else in that area will be rendered.
+
+\begin{enumerate}
+  \item Activate shader program for setting depth to zero
+  \item Draw Boolean AND of cubes
+\end{enumerate}
 
 Finally we render the two volumes again depth-sorted with blending enabled and
 the depth function set to \emph{LESS}.  Since on the previous step we masked off
@@ -514,46 +491,18 @@ the area of the screen with the intersection, the fragments in those parts will
 just be discarded.  In fact, on most modern video cards they will not even be
 processed by the fragment shader at all because of early Z-kill.
 
-\begin{Verbatim}[fontsize=\small]
-  <blend enabled="true" />
-  <depth function="less" />
-  <sort>
-    <group>
-      <framebuffer>
-        <attachment usage="color" link="coords-texture-1" />
-        <use program="primary-coords-program">
-          <cull faces="front" />
-          <instance of="cube-1-group" />
-        </use>
-      </framebuffer>
-      <use program="kruger-program">
-        <cull faces="back" />
-        <group id="cube-1-group">
-          <translate x="-1">
-            <cube id="cube-1" />
-          </translate>
-        </group>
-      </use>
-    </group>
-    <group>
-      <framebuffer>
-        <attachment usage="color" link="coords-texture-2" />
-        <use program="primary-coords-program">
-          <cull faces="front" />
-          <instance of="cube-2-group" />
-        </use>
-      </framebuffer>
-      <use program="kruger-program">
-        <cull faces="back" />
-        <group id="cube-2-group">
-          <translate x="+1">
-            <cube id="cube-2" />
-          </translate>
-        </group>
-      </use>
-    </group>
-  </sort>
-\end{Verbatim}
+\begin{enumerate}
+  \item Enable blending
+  \item Set depth function to \emph{LESS}
+  \item Bind framebuffer with coordinates texture
+  \item Cull front faces
+  \item Activate shader program for rendering primary texture coordinates
+  \item Draw cube behind intersection
+  \item Cull back faces
+  \item Activate shader program for rendering volumes
+  \item Draw cube behind intersection
+  \item Repeat for cube in front of intersection
+\end{enumerate}
 
 \subsection{Boolean AND with Boolean XOR}
 

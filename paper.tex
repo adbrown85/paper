@@ -385,6 +385,11 @@ of that part are rendered with a shader that uses the previously-stored texture
 coordinates to form a ray through the volume.  The ray then samples the volume
 at regular intervals.
 
+In addition, both approaches use multiple passes.  To blend the samples
+correctly between passes, each pass must start with the results of the previous
+pass.  The results of all the passes cannot be simply blended together
+afterwards.
+
 \subsection{Boolean AND with Depth Buffer Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer

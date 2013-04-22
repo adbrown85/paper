@@ -530,30 +530,26 @@ faces, and one to hold results between passes.  The textures to store the
 texture coordinates and results between passes will be used with external
 framebuffer objects, and should thus be at least as big as the window.
 
-\begin{Verbatim}[fontsize=\small]
-  <texture id="volume-texture-1" file="volume-1.vlb" />
-  <texture id="volume-texture-2" file="volume-2.vlb" />
-  <texture id="coords-texture-1" size="768" />
-  <texture id="coords-texture-2" size="768" />
-  <texture id="results-texture" size="768" />
-\end{Verbatim}
+\begin{enumerate}
+  \item Bind volume textures
+  \item Bind textures to store texture coordinates
+  \item Bind texture to store results
+\end{enumerate}
 
 Storage should also be created to act as a depth buffer for some passes.  Since
 we do not need to read from it, it can just be a \emph{renderbuffer}.  It also
 needs to be at least as big as the window.
 
-\begin{Verbatim}[fontsize=\small]
-  <renderbuffer id="depth-renderbuffer" format="depth" size="768" />
-\end{Verbatim}
+\begin{enumerate}
+  \item Create depth renderbuffer
+\end{enumerate}
 
 Next the results texture should be cleared.
 
-\begin{Verbatim}[fontsize=\small]
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <clear color="0 0 0 0" />
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Bind framebuffer with results texture
+  \item Clear color
+\end{enumerate}
 
 Then the pieces behind the intersection should be used to render the volumes to
 the results texture.  Because there may be multiple pieces behind the
@@ -562,107 +558,58 @@ farthest back, we first clear the depth buffer to zero and set the depth
 function to \emph{GREATER}.  Once we have those coordinates stored, we do the
 opposite by clearing the depth buffer to one and setting the depth function back
 to \emph{LESS}.  That way we render using the faces that are farthest forward.
-Note in the code snippet below we only show the first volume.
 
-\begin{Verbatim}[fontsize=\small]
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <attachment usage="depth" link="depth-renderbuffer" />
-    <clear depth="0.0" />
-    <depth function="greater" />
-    <cull faces="front" />
-    <use program="primary-coords-program">
-      <group id="pieces-of-cube-1-behind-intersection-group">
-        <booleanXor of="cube-1 cube-2" hide="cube-2" filter="gequal" />
-      </group>
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <attachment usage="depth" link="depth-renderbuffer" />
-    <clear depth="1.0" />
-    <depth function="less" />
-    <cull faces="back" />
-    <use program="first-pass-program">
-      <uniform name="MVPMatrix" usage="viewprojection" />
-      <uniform name="BackFacesTexture" link="coords-texture-1" />
-      <uniform name="VolumeTexture" link="volume-texture-1" />
-      <instance of="pieces-of-cube-1-behind-intersection-group" />
-    </use>
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Bind framebuffer with coordinates texture and depth renderbuffer
+  \item Clear depth to zero
+  \item Set depth function to \emph{GREATER}
+  \item Cull front faces
+  \item Activate shader program for rendering primary texture coordinates
+  \item Draw Boolean XOR with pieces behind intersection
+  \item Bind framebuffer with results texture and depth renderbuffer
+  \item Clear depth to one
+  \item Set depth function to \emph{LESS}
+  \item Cull back faces
+  \item Activate shader program for rendering volumes
+  \item Draw Boolean XOR with pieces behind intersection
+\end{enumerate}
 
 Following our pattern, we now render the intersection itself.  Notice we do not
 need a depth buffer for this pass, although we do need to make sure both sets of
 texture coordinates are stored and are available when we render the
 intersection.
 
-\begin{Verbatim}[fontsize=\small]
-  <cull faces="front" />
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <use program="primary-coords-program">
-      <uniform name="MVPMatrix" usage="viewprojection" />
-      <group id="intersection-group">
-        <booleanAnd of="cube-1 cube-2" />
-      </group>
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-2" />
-    <use program="secondary-coords-program">
-      <uniform name="MVPMatrix" usage="viewprojection" />
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-  <cull faces="back" />
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <use program="second-pass-program">
-      <uniform name="MVPMatrix" usage="viewprojection" />
-      <uniform name="ResultsTexture" link="results-texture" />
-      <uniform name="CoordsTexture1" link="coords-texture-1" />
-      <uniform name="CoordsTexture2" link="coords-texture-2" />
-      <uniofrm name="VolumeTexture1" link="volume-texture-1" />
-      <uniofrm name="VolumeTexture2" link="volume-texture-2" />
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Cull front faces
+  \item Bind framebuffer with first coordinates texture
+  \item Activate shader program for rendering primary texture coordinates
+  \item Draw Boolean AND of cubes
+  \item Bind framebuffer with second coordinates texture
+  \item Activate shader program for rendering secondary texture coordinates
+  \item Draw Boolean AND of cubes
+  \item Cull back faces
+  \item Bind framebuffer with results texture
+  \item Activate shader program for rendering volumes
+  \item Draw Boolean AND of cubes
+\end{enumerate}
 
 Next we render any pieces of the cube in front of the intersection to the
 results texture.  Similar to the first pass, we use the depth buffer to make
-sure we only take the texture coordinates of the faces we want.  Again we omit
-the code to render the second cube.
+sure we only take the texture coordinates of the faces we want.
 
-\begin{Verbatim}[fontsize=\small]
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <attachment usage="depth" link="depth-renderbuffer" />
-    <cull faces="front" />
-    <depth function="greater" />
-    <clear depth="0.0" />
-    <use program="primary-coords-program">
-      <uniform name="MVPMatrix" usage="viewprojection" />
-      <group id="pieces-of-cube-1-in-front-of-intersection">
-        <booleanXor of="cube-1 cube-2" hide="cube-2" filter="less" />
-      </group>
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <attachment usage="depth" link="depth-renderbuffer" />
-    <depth function="less" />
-    <cull faces="back" />
-    <use program="third-pass-program">
-      <uniform name="MVPMatrix" usage="viewprojection" />
-      <uniform name="ResultsTexture" link="results-texture" />
-      <uniform name="CoordsTexture" link="coords-texture-1" />
-      <uniform name="VolumeTexture" link="volume-texture-1" />
-      <insance of="pieces-of-cube-1-in-front-of-intersection" />
-    </use>
-  </framebuffer>
-\end{Verbatim}
+\begin{enumerate}
+  \item Bind framebuffer with coordinates texture and depth renderbuffer
+  \item Cull front faces
+  \item Set depth function to \emph{GREATER}
+  \item Clear depth buffer to zero
+  \item Activate shader program for rendering primary texture coordinates
+  \item Draw Boolean XOR with pieces in front of intersection
+  \item Bind framebuffer with results texture and depth renderbuffer
+  \item Cull back faces
+  \item Set depth function to \emph{LESS}
+  \item Activate shader program for rendering volumes
+  \item Draw Boolean XOR with pieces in front of intersection
+\end{enumerate}
 
 Finally we render the results to the screen by drawing both cubes again.  The
 shader program for this final pass just outputs whatever is in the results
@@ -670,19 +617,10 @@ texture.  We need this final pass because depending on how the scene is laid out
 there may not be any pieces behind or in front of the intersection, meaning the
 first and third passes may not be run.
 
-\begin{Verbatim}[fontsize=\small]
-  <use program="final-pass-program">
-    <uniform name="ResultsTexture" link="results-texture" />
-    <translate x="-1.0">
-      <uniform name="MVPMatrix" usage="modelviewprojection" />
-      <cube id="cube-1" />
-    </translate>
-    <translate x="+1.0">
-      <uniform name="MVPMatrix" usage="modelviewprojection" />
-      <cube id="cube-2" />
-    </translate>
-  </use>
-\end{Verbatim}
+\begin{enumerate}
+  \item Activate shader for rendering results
+  \item Render both cubes
+\end{enumerate}
 
 It is mostly CPU-based, since it requires both Boolean operations to be done on
 the CPU.  The extra work on the CPU results in less rendering passes, however.

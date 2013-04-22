@@ -426,8 +426,8 @@ least as big as the window.
 \begin{Verbatim}[fontsize=\small]
   <texture id="first-volume-texture" file="first.vlb">
   <texture id="second-volume-texture" file="second.vlb">
-  <texture id="primary-coords-texture" width="768" height="768">
-  <texture id="secondary-coords-texture" width="768" height="768">
+  <texture id="coords-texture-1" width="768" height="768">
+  <texture id="coords-texture-2" width="768" height="768">
   <texture id="results-texture" width="768" height="768">
 \end{Verbatim}
 
@@ -442,7 +442,7 @@ it can be redrawn later.
 \begin{Verbatim}[fontsize=\small]
   <cull faces="front" />
   <framebuffer>
-    <attachment usage="color" link="primary-coords-texture" />
+    <attachment usage="color" link="coords-texture-1" />
     <use program="primary-coords-program">
       <instance of="cube-1-group" />
     </use>
@@ -518,7 +518,7 @@ processed by the fragment shader at all because of early Z-kill.
   <sort>
     <group>
       <framebuffer>
-        <attachment usage="color" link="primary-coords-texture" />
+        <attachment usage="color" link="coords-texture-1" />
         <use program="primary-coords-program">
           <cull mode="front" />
           <instance of="cube-1-group" />

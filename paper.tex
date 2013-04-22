@@ -659,6 +659,41 @@ scene for nodes with a specific ID.  Nodes can also register themselves as {\em
 listeners} of other nodes by implementing the {\tt NodeListener} interface and
 passing a pointer to the node's {\tt addNodeListener} method.
 
+The XML below shows how the second pass of the first approach is rendered.
+Notice that the render graph supports basic instancing through the {\em group}
+and {\em instance} nodes.  When an instance node is visited, it simply traverses
+the group it points to.  Complex behavior can be achieved with nested groups.
+
+\begin{Verbatim}[fontsize=\small]
+  <cull faces="front" />
+  <framebuffer>
+    <attachment usage="color" link="coords-texture-1" />
+    <use program="primary-coords-program">
+      <group id="intersection-group">
+        <booleanAnd of="cube-1 cube-2" />
+      </group>
+    </use>
+  </framebuffer>
+  <framebuffer>
+    <attachment usage="color" link="coords-texture-2" />
+    <use program="secondary-coords-program">
+      <instance of="intersection-group" />
+    </use>
+  </framebuffer>
+  <cull faces="back" />
+  <framebuffer>
+    <attachment usage="color" link="results-texture" />
+    <use program="second-pass-program">
+      <uniform name="CoordsTexture1" link="coords-texture-1" />
+      <uniform name="CoordsTexture2" link="coords-texture-2" />
+      <uniform name="VolumeTexture1" link="volume-texture-1" />
+      <uniform name="VolumeTexture2" link="volume-texture-2" />
+      <uniform name="MVPMatrix" usage="modelviewprojection" />
+      <instance of="intersection-group" />
+    </use>
+  </framebuffer>
+\end{Verbatim}
+
 All of the libraries can be compiled as shared libraries using GCC on Linux and
 Mac OS X.
 

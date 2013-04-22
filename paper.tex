@@ -379,10 +379,11 @@ but the intersection.
 \subsection{Boolean AND with Depth Buffer Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer
-masking.  The basic idea is to mask off everything but the area on the screen
-with the intersection, rendering the cubes behind it, the intersection itself,
-and then the cubes in front of it.  Then the area of the intersection is masked
-off and everything else is drawn depth-sorted.
+masking.  The basic idea is render the part of the volume directly behind the
+intersection, render the intersection itself, and then render the part of the
+volume directly in front of the intersection.  Finally the area of the
+intersection is masked off and everything else is drawn depth-sorted with
+blending enabled.
 
 \begin{figure}
 \centering

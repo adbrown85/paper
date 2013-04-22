@@ -637,14 +637,19 @@ of OpenGL 3.  In other words, no deprecated functionality from OpenGL 2 was
 used.
 
 To facilitate the process, a handful of general-purpose graphics libraries were
-developed.  At the lowest levels are a simple 3D mathematics library and a
-library providing thin C++ wrappers around the components already in OpenGL.
-Above that, another library provides additional utilities for working with
-OpenGL, including one for loading volumetric data as a texture.  At the highest
-level is a library providing a simple render graph that can be used to rapidly
-prototype OpenGL applications.  Similar to SVG, the render graph can be written
-in XML so scenes can easily be saved, reloaded, and shared.  All of the
-libraries can be compiled as shared libraries using GCC on Linux and Mac OS X.
+developed.
+
+At the lowest levels are a simple 3D mathematics library and a library providing
+thin C++ wrappers around the components already in OpenGL.  Above that, another
+library provides additional utilities for working with OpenGL, including one for
+loading volumetric data as a texture.
+
+At the highest level is a library providing a simple render graph that can be
+used to rapidly prototype OpenGL applications.  Similar to SVG, the render graph
+can be written in XML so scenes can easily be saved, reloaded, and shared.
+
+All of the libraries can be compiled as shared libraries using GCC on Linux and
+Mac OS X.
 
 From there an application was created to view the resulting scenes.  It can
 rotate the camera around the scene, as well as select objects in the scene and

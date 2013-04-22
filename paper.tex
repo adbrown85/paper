@@ -378,6 +378,13 @@ The boolean operations involved are AND and XOR.  AND takes the intersection of
 two shapes, while XOR, meaning exclusive OR, takes everything but the
 intersection.
 
+Both approaches are based on the volume rendering method in \cite{Kruger03}, as
+previously mentioned.  To render part of a volume, they first render the texture
+coordinates of the back faces of that part to a texture.  Then the front faces
+of that part are rendered with a shader that uses the previously-stored texture
+coordinates to form a ray through the volume.  The ray then samples the volume
+at regular intervals.
+
 \subsection{Boolean AND with Depth Buffer Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer

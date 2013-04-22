@@ -433,9 +433,9 @@ least as big as the window.
 
 Next the part of the volume behind the intersection is rendered into the results
 texture.  To get just that part the back faces of the Boolean AND are used
-instead of the front faces of the cube.  Note in the code snippet below we only
-show the first volume, hide where we set the uniform variables in the shader
-program for brevity, and give the intersection an ID so it can be redrawn later.
+instead of the front faces of the cube.  Note in the code snippet below we omit
+the instructions for rendering the second volume and for setting uniform
+variables.  We also give the intersection an ID so it can be redrawn later.
 
 \begin{Verbatim}[fontsize=\small]
   <cull faces="front" />

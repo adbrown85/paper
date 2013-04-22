@@ -450,7 +450,9 @@ it can be redrawn later.
   <framebuffer>
     <attachment usage="color" link="results-texture" />
     <use program="first-pass-program">
-      <booleanAnd id="intersection" of="cube-1 cube-2" />
+      <group id="intersection-group">
+        <booleanAnd of="cube-1 cube-2" />
+      </group>
     </use>
   </framebuffer>
 \end{Verbatim}
@@ -465,13 +467,13 @@ the shader program that renders the intersection.
   <framebuffer>
     <attachment usage="color" link="coords-texture-1" />
     <use program="primary-coords-program">
-      <instance of="intersection" />
+      <instance of="intersection-group" />
     </use>
   </framebuffer>
   <framebuffer>
     <attachment usage="color" link="coords-texture-2" />
     <use program="secondary-coords-program">
-      <instance of="intersection" />
+      <instance of="intersection-group" />
     </use>
   </framebuffer>
   <cull faces="back" />
@@ -480,7 +482,7 @@ the shader program that renders the intersection.
     <use program="third-pass-program">
       <uniform name="CoordsTexture1" link="coords-texture-1" />
       <uniform name="CoordsTexture2" link="coords-texture-2" />
-      <instance of="intersection" />
+      <instance of="intersection-group" />
     </use>
   </framebuffer>
 \end{Verbatim}
@@ -501,7 +503,7 @@ generated to the lowest value to effectively mask off that part of the screen.
   <framebuffer>
     <attachment usage="color" link="results-texture" />
     <use program="fourth-pass-program">
-      <instance of="intersection" />
+      <instance of="intersection-group" />
     </use>
   </framebuffer>
 \end{Verbatim}

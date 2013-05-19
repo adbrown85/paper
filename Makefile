@@ -11,4 +11,4 @@ clean:
 	@$(RM) paper.blg
 	@$(RM) *.log
 run: paper.pdf
-	@open paper.pdf
+	@open $<

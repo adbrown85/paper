@@ -10,5 +10,5 @@ clean:
 	@$(RM) paper.bbl
 	@$(RM) paper.blg
 	@$(RM) *.log
-run: paper.pdf
+view: paper.pdf
 	@open $<

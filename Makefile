@@ -1,4 +1,4 @@
-all: run
+all: paper.pdf
 paper.pdf: paper.tex paper.bib
 	@pdflatex $< > /dev/null
 	@bibtex paper > /dev/null

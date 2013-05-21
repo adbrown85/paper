@@ -1,6 +1,7 @@
 \documentclass{article}
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
+\usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{fancyvrb}
@@ -734,6 +735,21 @@ evaluated.
   \item How fast can they be rendered?
   \item How easy were they to implement?
 \end{itemize}
+
+\begin{table}
+  \centering
+  \begin{tabular}{ l l l }
+    \toprule
+    Approach & Macbook & Desktop \\
+    \midrule
+    Boolean AND with masking & 22 & 13 \\
+    Boolean AND with XOR & 24 & 13 \\
+    Slicing & ? & ? \\
+    \bottomrule
+  \end{tabular}
+  \caption{Performance measurements}
+  \label{performance-table}
+\end{table}
 
 % ============
 % Bibliography

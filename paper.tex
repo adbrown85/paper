@@ -731,6 +731,31 @@ evaluated.
 % ==========
 \section{Evaluation}
 
+The two approaches to rendering intersecting volumes using boolean operations
+were evaluated using different criteria.
+
+Because volume visualization is used in the scientific and medical communities
+to aid in making important decisions, an approach that does not handle all cases
+will likely not be appropriate for widespread usage.  With that in mind, the
+accuracy of each approach was judged by looking for edge cases with visual
+artifacts.
+
+Unfortunately the Boolean XOR approach may show some visual artifacts from
+certain angles.  This occurs because when two pieces have the same depth value,
+due to perspective one of the pieces may actually appear behind the other.  In
+the future, this issue may be solved by using the distance from the camera to
+sort rather than the actual depth.
+
+% Picture of visual artifacts with Boolean XOR approach
+
+% Picture of depth-sorting issue
+
+The performance of each approach was measured by using a simple frame counter
+showing the number of frames rendered in the previous second.  Multiple camera
+angles and scene configurations were tried in order to expose strong and weak
+points of the approaches.  The tests were run on at least three different
+machines with a variety of operating systems (Linux, Mac OS X) and video cards
+(ATI, NVIDIA).  Table \ref{performance-table} shows the results.
 
 \begin{table}
   \centering
@@ -747,6 +772,41 @@ evaluated.
   \caption{Performance measurements}
   \label{performance-table}
 \end{table}
+
+% Furthermore, a variety of sampling rates were used to determine how each
+% approach scales as the number of samples taken increases.
+
+As a baseline the Boolean-based approaches were compared to the existing
+view-aligned slicing method from previous work by developing a simple prototype.
+Since the slicing method requires significantly more state changes when the
+volumes are side-by-side as opposed to when one is in front of the other, it was
+particularly important with this method that performance measurements were taken
+from a variety of perspectives.
+
+In addition, a variation of the slicing method that was optimized for two
+volumes was created.  Basically rather than using uniform variables to switch
+textures as would normally be done, the optimized variation stores the texture
+with each vertex instead.  While it requires a fairly significant amount of
+extra storage, using vertex attributes allows all the slices to be transferred
+to the card at once.  The result is a considerable performance boost, similar to
+how it is generally faster to transfer one large file across a network then many
+small ones.
+
+As shown both Boolean-based approaches outperformed the traditional slicing
+method, but were in turn bested by the optimized slicing method.  It should be
+noted that the frame rates for the optimized slicing method are the worst case,
+and in average it performed even better, around forty frames per second.
+
+Judging from the numbers, it appears that the multiple passes of the
+Boolean-based approaches create too much overhead compared to the optimized
+slicing method.  The optimized slicing method also has a very simple fragment
+shader which may keep it from being fragment-bound.
+
+Altogether, although the Boolean-based approaches outperform the un-optimized
+slicing method, it is recommended that the traditional slicing method with the
+optimizations described be used.  The optimized slicing method is not only
+faster, but it supports volumes of any orientation.  Furthermore, the optimized
+method should scale to more volumes relatively easily.
 
 % ============
 % Bibliography

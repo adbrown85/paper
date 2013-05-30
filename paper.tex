@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usepackage{fancyvrb}
+\usepackage{pgfplots}
 
 \begin{document}
 
@@ -820,6 +821,53 @@ shader which may keep it from being fragment-bound.
 \centering
 \includegraphics{frame-rates.pdf}
 \label{frame-rates}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=Samples,
+    ylabel=Frames Per Second]
+\addplot coordinates {
+  (100, 22)
+  (200, 10)
+  (300, 7)
+  (400, 5)
+  (500, 4)
+};
+\addlegendentry{Slicing (attributes)}
+\addplot coordinates {
+  (100, 20)
+  (200, 10)
+  (300, 7)
+  (400, 5)
+  (500, 4)
+};
+\addlegendentry{Boolean XOR}
+\addplot coordinates {
+  (100, 20)
+  (200, 10)
+  (300, 6)
+  (400, 4)
+  (500, 4)
+};
+\addlegendentry{Depth-masking}
+\addplot coordinates {
+  (100, 6)
+  (200, 3)
+  (300, 2)
+  (400, 1)
+  (500, 1)
+};
+\addlegendentry{Slicing (uniforms)}
+\end{axis}
+\end{tikzpicture}
+\caption{
+Chart showing performance measurements as number of samples varies.  The slicing
+with attributes, boolean XOR, and depth-masking methods are all about the same,
+while the slicing with uniforms method lags behind considerably.
+}
 \end{figure}
 
 Altogether, although the Boolean-based approaches outperform the un-optimized

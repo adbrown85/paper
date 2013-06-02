@@ -1,3 +1,5 @@
+VIEWER := open
+
 all: paper.pdf
 paper.pdf: paper.tex paper.bib
 	@pdflatex $< > /dev/null
@@ -11,4 +13,4 @@ clean:
 	@$(RM) paper.blg
 	@$(RM) *.log
 view: paper.pdf
-	@open $<
+	@$(VIEWER) $<

@@ -1,4 +1,5 @@
 VIEWER := open
+-include Makefile.local
 
 all: paper.pdf
 paper.pdf: paper.tex paper.bib

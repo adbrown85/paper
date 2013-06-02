@@ -13,4 +13,4 @@ clean:
 	@$(RM) paper.blg
 	@$(RM) *.log
 view: paper.pdf
-	@$(VIEWER) $<
+	@$(VIEWER) $< > /dev/null 2>&1

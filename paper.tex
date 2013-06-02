@@ -865,6 +865,54 @@ while the slicing with uniforms method lags behind considerably.
 }
 \end{figure}
 
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    title=3.0 GHz P4 with NVIDIA GeForce 8500 GT,
+    xlabel=Samples,
+    ylabel=Frames Per Second]
+\addplot coordinates {
+  (100, 10)
+  (200, 6)
+  (300, 4)
+  (400, 3)
+  (500, 2)
+};
+\addlegendentry{Depth-masking}
+\addplot coordinates {
+  (100, 13)
+  (200, 7)
+  (300, 5)
+  (400, 4)
+  (500, 3)
+};
+\addlegendentry{Boolean XOR}
+\addplot coordinates {
+  (100, 18)
+  (200, 9)
+  (300, 6)
+  (400, 5)
+  (500, 4)
+};
+\addlegendentry{Slicing (uniforms)}
+\addplot coordinates {
+  (100, 15)
+  (200, 8)
+  (300, 5)
+  (400, 4)
+  (500, 3)
+};
+\addlegendentry{Slicing (attributes)}
+\end{axis}
+\end{tikzpicture}
+\caption{
+Chart showing performance measurements as number of samples varies.  Here the
+slicing with uniforms method is fastest, followed by the slicing with attributes
+method, and the Boolean XOR method.  The depth-masking method is slowest.
+}
+\end{figure}
+
 Altogether, although the Boolean-based approaches outperform the un-optimized
 slicing method, it is recommended that the traditional slicing method with the
 optimizations described be used.  The optimized slicing method is not only

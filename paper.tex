@@ -825,13 +825,13 @@ shader which may keep it from being fragment-bound.
     xlabel=Samples,
     ylabel=Frames Per Second]
 \addplot coordinates {
-  (100, 22)
+  (100, 20)
   (200, 10)
-  (300, 7)
-  (400, 5)
+  (300, 6)
+  (400, 4)
   (500, 4)
 };
-\addlegendentry{Slicing (attributes)}
+\addlegendentry{Depth-masking}
 \addplot coordinates {
   (100, 20)
   (200, 10)
@@ -841,14 +841,6 @@ shader which may keep it from being fragment-bound.
 };
 \addlegendentry{Boolean XOR}
 \addplot coordinates {
-  (100, 20)
-  (200, 10)
-  (300, 6)
-  (400, 4)
-  (500, 4)
-};
-\addlegendentry{Depth-masking}
-\addplot coordinates {
   (100, 6)
   (200, 3)
   (300, 2)
@@ -856,6 +848,14 @@ shader which may keep it from being fragment-bound.
   (500, 1)
 };
 \addlegendentry{Slicing (uniforms)}
+\addplot coordinates {
+  (100, 22)
+  (200, 10)
+  (300, 7)
+  (400, 5)
+  (500, 4)
+};
+\addlegendentry{Slicing (attributes)}
 \end{axis}
 \end{tikzpicture}
 \caption{

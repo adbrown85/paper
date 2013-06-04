@@ -770,20 +770,20 @@ ends up being rendered behind the red piece on the right.}
 The performance of each approach was measured by using a simple frame counter
 showing the number of frames rendered in the previous second.  Multiple camera
 angles and scene configurations were tried in order to expose strong and weak
-points of the approaches.  The tests were run on two different machines with a
+points of the approaches.  The tests were run on three different machines with a
 variety of operating systems (Linux, Mac OS X) and video cards (ATI, NVIDIA).
 Table \ref{performance-table} shows the results.
 
 \begin{table}
   \centering
-  \begin{tabular}{ l l l }
+  \begin{tabular}{ l l l l }
     \toprule
-    Approach & Macbook & Desktop \\
+    Approach & Macbook & Desktop & Workstation\\
     \midrule
-    Boolean AND with masking & 22 & 13 \\
-    Boolean AND with XOR & 24 & 13 \\
-    Slicing & 6 & 18 \\
-    Optimized Slicing & 25 & 15 \\
+    Boolean AND with masking & 22 & 13 & 51 \\
+    Boolean AND with XOR & 24 & 13 & 76 \\
+    Slicing & 6 & 18 & 130 \\
+    Optimized Slicing & 25 & 15 & 172 \\
     \bottomrule
   \end{tabular}
   \caption{Performance measurements}
@@ -795,7 +795,9 @@ approach scales as the number of samples taken increases.  Figure
 \ref{macbook-performance-chart} shows how the methods scale on a 2.2 GHz Intel
 Core i7 Macbook Pro with an AMD Radeon HD 6750M video card.  Likewise figure
 \ref{desktop-performance-chart} does so for an older 3.0 GHz Intel Pentium 4
-Linux desktop with an NVIDIA GeForce 8500 GT video card.
+Linux desktop with an NVIDIA GeForce 8500 GT video card.  Furthermore, figure
+\ref{workstation-performance-chart} depicts the results for a newer 3.33 GHz
+Intel Core i7 Linux workstation with an NVIDIA Quadro FX 5800 video card.
 
 As a baseline the Boolean-based approaches were compared to the existing
 view-aligned slicing method from previous work by developing a simple prototype.
@@ -919,6 +921,56 @@ slicing with uniforms method is fastest, followed by the slicing with attributes
 method, and the Boolean XOR method.  The depth-masking method is slowest.
 }
 \label{desktop-performance-chart}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    title=3.33 GHz Intel Core i7 with Quadro FX 5800,
+    xlabel=Samples,
+    ylabel=Frames Per Second]
+\addplot coordinates {
+  (100, 51)
+  (200, 28)
+  (300, 19)
+  (400, 14)
+  (500, 11)
+};
+\addlegendentry{Depth-masking}
+\addplot coordinates {
+  (100, 76)
+  (200, 39)
+  (300, 27)
+  (400, 23)
+  (500, 17)
+};
+\addlegendentry{Boolean XOR}
+\addplot coordinates {
+  (100, 130)
+  (200, 68)
+  (300, 46)
+  (400, 36)
+  (500, 29)
+};
+\addlegendentry{Slicing (uniforms)}
+\addplot coordinates {
+  (100, 172)
+  (200, 89)
+  (300, 60)
+  (400, 46)
+  (500, 38)
+};
+\addlegendentry{Slicing (attributes)}
+\end{axis}
+\end{tikzpicture}
+\caption{
+Chart showing performance measurements as number of samples varies on an Intel
+Core i7 system with a Quadro FX 5800 video card.  Here the difference between
+the methods is more dramatic.  Both slicing methods handedly beat the
+Boolean-based methods.
+}
+\label{workstation-performance-chart}
 \end{figure}
 
 Altogether, although the Boolean-based approaches outperform the un-optimized

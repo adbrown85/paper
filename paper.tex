@@ -134,7 +134,7 @@ and 1.0 being the other.
 % =============
 \chapter{Previous Work}
 
-\subsection{Overview}
+\section{Overview}
 
 The first major breakthrough in volume rendering came with \cite{Levoy88}.
 Previous techniques tried to use actual geometry to approximate the surfaces of
@@ -220,7 +220,7 @@ OpenCL to better leverage the GPU for multi-volume rendering.  The
 implementation by Kainz et. al. \cite{Kainz09} was slower for simple cases, but could
 render more complicated scenes.
 
-\subsection{Slicing}
+\section{Slicing}
 
 The classic method for performing volume rendering on the GPU is called slicing.
 Slicing uses polygons perpendicular to the viewing direction, called proxy
@@ -392,7 +392,7 @@ correctly between passes, each pass must start with the results of the previous
 pass.  The results of all the passes cannot be simply blended together
 afterwards.
 
-\subsection{Boolean AND with Depth Buffer Masking}
+\section{Boolean AND with Depth Buffer Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer
 masking.  The basic idea is render the part of the volume directly behind the
@@ -506,7 +506,7 @@ processed by the fragment shader at all because of early Z-kill.
   \item Repeat for cube in front of intersection
 \end{enumerate}
 
-\subsection{Boolean AND with Boolean XOR}
+\section{Boolean AND with Boolean XOR}
 
 The second approach uses a Boolean AND operation together with a Boolean XOR.
 Here the idea is to break up both volumes into pieces around the intersection.

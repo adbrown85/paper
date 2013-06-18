@@ -2,7 +2,7 @@ VIEWER := open
 -include Makefile.local
 
 all: paper.pdf
-paper.pdf: paper.tex paper.bib
+paper.pdf: paper.tex paper.bib suthesis-2e.sty
 	@pdflatex $< > /dev/null
 	@bibtex paper > /dev/null
 	@pdflatex $< > /dev/null

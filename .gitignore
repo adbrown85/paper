@@ -4,5 +4,8 @@ Makefile.local
 paper.aux
 paper.bbl
 paper.blg
+paper.lof
 paper.log
+paper.lot
 paper.pdf
+paper.toc

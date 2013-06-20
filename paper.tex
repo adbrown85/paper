@@ -34,9 +34,10 @@ Methods for rendering an arbitrary number of intersecting volumes using hardware
 acceleration have been developed, but they generally require a large amount of
 geometry to be created every frame.  In the simple case where two axis-aligned
 volumes intersect, it is shown that Boolean operations can be used so that
-the camera may move without regenerating any geometry.  However, the two
-variations presented herein still achieve similar frame rates to that of the
-canonical slicing method.
+the camera may move without regenerating any geometry.  Furthermore, samples
+that do not contribute to the final image may be completely avoided.  The two
+variations presented herin achieve higher frame rates than the traditional
+slicing method.
 \end{abstract}
 
 % Switch back to a plain page style for the rest of the paper

@@ -834,47 +834,46 @@ shader which may keep it from being fragment-bound.
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    title=2.2 GHz i7 with AMD Radeon HD 6750M,
+    title=2.2 GHz Intel Core i7 with AMD Radeon HD 6750M,
     xlabel=Samples,
     ylabel=Frames Per Second]
 \addplot coordinates {
-  (100, 20)
-  (200, 10)
+  (100, 12)
+  (200, 9)
   (300, 6)
-  (400, 4)
-  (500, 4)
-};
-\addlegendentry{Depth-masking}
-\addplot coordinates {
-  (100, 20)
-  (200, 10)
-  (300, 7)
   (400, 5)
   (500, 4)
 };
 \addlegendentry{Boolean XOR}
 \addplot coordinates {
-  (100, 6)
-  (200, 3)
-  (300, 2)
-  (400, 1)
-  (500, 1)
-};
-\addlegendentry{Slicing (uniforms)}
-\addplot coordinates {
-  (100, 22)
-  (200, 10)
-  (300, 7)
+  (100, 12)
+  (200, 9)
+  (300, 6)
   (400, 5)
   (500, 4)
 };
-\addlegendentry{Slicing (attributes)}
+\addlegendentry{Depth-Masking}
+\addplot coordinates {
+  (100, 3)
+  (200, 1)
+  (300, 1)
+  (400, 1)
+  (500, 1)
+};
+\addlegendentry{General Slicing}
+\addplot coordinates {
+  (100, 12)
+  (200, 6)
+  (300, 4)
+  (400, 3)
+  (500, 2)
+};
+\addlegendentry{Optimized Slicing}
 \end{axis}
 \end{tikzpicture}
 \caption{
-Chart showing performance measurements as number of samples varies.  The slicing
-with attributes, boolean XOR, and depth-masking methods are all about the same,
-while the slicing with uniforms method lags behind considerably.
+Chart showing performance measurements as number of samples varies on an Intel
+Core i7 system with an AMD Radeon HD 6750M video card.
 }
 \label{macbook-performance-chart}
 \end{figure}
@@ -936,44 +935,42 @@ method, and the Boolean XOR method.  The depth-masking method is slowest.
     xlabel=Samples,
     ylabel=Frames Per Second]
 \addplot coordinates {
-  (100, 51)
-  (200, 28)
-  (300, 19)
+  (100, 38)
+  (200, 24)
+  (300, 18)
   (400, 14)
-  (500, 11)
-};
-\addlegendentry{Depth-masking}
-\addplot coordinates {
-  (100, 76)
-  (200, 39)
-  (300, 27)
-  (400, 23)
-  (500, 17)
+  (500, 12)
 };
 \addlegendentry{Boolean XOR}
 \addplot coordinates {
-  (100, 130)
-  (200, 68)
-  (300, 46)
-  (400, 36)
-  (500, 29)
+  (100, 37)
+  (200, 25)
+  (300, 18)
+  (400, 15)
+  (500, 12)
 };
-\addlegendentry{Slicing (uniforms)}
+\addlegendentry{Depth-Masking}
 \addplot coordinates {
-  (100, 172)
-  (200, 89)
-  (300, 60)
-  (400, 46)
-  (500, 38)
+  (100, 32)
+  (200, 17)
+  (300, 11)
+  (400, 9)
+  (500, 7)
 };
-\addlegendentry{Slicing (attributes)}
+\addlegendentry{General Slicing}
+\addplot coordinates {
+  (100, 35)
+  (200, 18)
+  (300, 12)
+  (400, 9)
+  (500, 7)
+};
+\addlegendentry{Optimized Slicing}
 \end{axis}
 \end{tikzpicture}
 \caption{
 Chart showing performance measurements as number of samples varies on an Intel
-Core i7 system with a Quadro FX 5800 video card.  Here the difference between
-the methods is more dramatic.  Both slicing methods handedly beat the
-Boolean-based methods.
+Core i7 system with a Quadro FX 5800 video card.
 }
 \label{workstation-performance-chart}
 \end{figure}

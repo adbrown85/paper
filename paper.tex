@@ -821,15 +821,13 @@ once.  The result is a considerable performance boost, similar to how it is
 generally faster to transfer one large file across a network then many small
 ones.
 
-As shown both Boolean-based approaches outperformed the traditional slicing
-method, but were in turn bested by the optimized slicing method.  It should be
-noted that the frame rates for the optimized slicing method are the worst case,
-and on average it performed even better, around forty frames per second.
+As shown the Boolean-based approaches generally outperformed the two variants of
+the slicing method.  The difference between the frame rates becomes more clear
+as the number of samples increases.
 
-Judging from the numbers, it appears that the multiple passes of the
-Boolean-based approaches create too much overhead compared to the optimized
-slicing method.  The optimized slicing method also has a very simple fragment
-shader which may keep it from being fragment-bound.
+Judging from the numbers, it appears all the approaches are fragment-bound, and
+thus the Boolean-based approaches win out because they can employ early ray
+termination.
 
 \begin{figure}
 \centering
@@ -975,16 +973,25 @@ Core i7 system with a Quadro FX 5800 video card.
 \label{workstation-performance-chart}
 \end{figure}
 
-Altogether, although the Boolean-based approaches outperform the un-optimized
-slicing method, it is recommended that the traditional slicing method with the
-optimizations described be used.  The optimized slicing method is not only
-faster, but it supports volumes of any orientation.  Furthermore, the optimized
-method should scale to more volumes relatively easily.
+Altogether, it is difficult to say for sure which approach developers should
+take to render intersecting volumes.  If the application only needs to handle
+two axis-aligned volumes, using one of the Boolean-based approaches could
+provide a more interactive experience for the user.  However, if the application
+needs more than two volumes, or if those volumes need to be oriented
+arbitrarily, it is best to stick with the slicing method.
 
-However, it is hoped that the lessons learned in this paper, namely that the
-overhead incurred by multi-pass algorithms may outweigh the cost of streaming
-geometry in other algorithms, will prove valuable to future endeavors in both
-volume rendering and graphics in general.
+In the future it would be interesting to see if either of the two Boolean-based
+approaches could be expanded to support more volumes and different orientations.
+The Boolean XOR approach would most likely be easier to extend to more volumes,
+since it is just a matter of creating more pieces.  However, the depth-masking
+approach will be better off for supporting different orientations because it
+works in pixel space.
+
+Either way, it is hoped that the lessons learned in this report, namely that
+rendering volumes is inherently fragment-bound and avoiding any unnecessary
+processing with early ray termination is key to achieving significant speed-ups,
+will prove valuable to future future endeavors in both volume rendering and
+graphics in general.
 
 % ============
 % Bibliography

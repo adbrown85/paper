@@ -812,15 +812,14 @@ Intel Core i7 Linux workstation with an NVIDIA Quadro FX 5800 video card.
 
 As a baseline the Boolean-based approaches were compared to the existing
 view-aligned slicing method from previous work by developing a simple prototype.
-
-In addition, a variation of the slicing method that was optimized for two
-volumes was created.  Basically rather than using uniform variables to switch
-textures as would normally be done, the optimized variation stores the texture
-with each vertex instead.  While it requires a fairly significant amount of
-extra storage, using vertex attributes allows all the slices to be transferred
-to the card at once.  The result is a considerable performance boost, similar to
-how it is generally faster to transfer one large file across a network then many
-small ones.
+To be fair, a variation of the slicing method optimized for two volumes was
+created.  Basically rather than using uniform variables to switch textures as
+would normally be done, the optimized variation stores the texture with each
+vertex instead.  While it requires a fairly significant amount of extra storage,
+using vertex attributes allows all the slices to be transferred to the card at
+once.  The result is a considerable performance boost, similar to how it is
+generally faster to transfer one large file across a network then many small
+ones.
 
 As shown both Boolean-based approaches outperformed the traditional slicing
 method, but were in turn bested by the optimized slicing method.  It should be

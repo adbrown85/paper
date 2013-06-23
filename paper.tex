@@ -791,9 +791,9 @@ results.
     \toprule
     Approach & Macbook & Desktop & Workstation\\
     \midrule
-    Boolean AND with XOR & 12 & 4 & 38 \\
-    Boolean AND with masking & 12 & 4 & 37 \\
-    Slicing & 12 & 3 & 32 \\
+    Boolean XOR & 12 & 4 & 38 \\
+    Depth-Masking & 12 & 4 & 37 \\
+    General Slicing & 12 & 3 & 32 \\
     Optimized Slicing & 3 & 3 & 35 \\
     \bottomrule
   \end{tabular}
@@ -906,7 +906,7 @@ Core i7 system with an AMD Radeon HD 6750M video card.
   (400, 1)
   (500, 1)
 };
-\addlegendentry{Depth-masking}
+\addlegendentry{Depth-Masking}
 \addplot coordinates {
   (100, 3)
   (200, 1)
@@ -914,7 +914,7 @@ Core i7 system with an AMD Radeon HD 6750M video card.
   (400, 1)
   (500, 1)
 };
-\addlegendentry{Slicing (uniforms)}
+\addlegendentry{General Slicing}
 \addplot coordinates {
   (100, 3)
   (200, 1)
@@ -922,7 +922,7 @@ Core i7 system with an AMD Radeon HD 6750M video card.
   (400, 1)
   (500, 1)
 };
-\addlegendentry{Slicing (attributes)}
+\addlegendentry{Optimized Slicing}
 \end{axis}
 \end{tikzpicture}
 \caption{

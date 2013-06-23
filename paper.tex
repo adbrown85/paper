@@ -675,33 +675,33 @@ and {\em instance} nodes.  When an instance node is visited, it simply traverses
 the group it points to.  Complex behavior can be achieved with nested groups.
 
 \begin{Verbatim}[fontsize=\small]
-  <cull faces="front" />
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-1" />
-    <use program="primary-coords-program">
-      <group id="intersection-group">
-        <booleanAnd of="cube-1 cube-2" />
-      </group>
-    </use>
-  </framebuffer>
-  <framebuffer>
-    <attachment usage="color" link="coords-texture-2" />
-    <use program="secondary-coords-program">
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
-  <cull faces="back" />
-  <framebuffer>
-    <attachment usage="color" link="results-texture" />
-    <use program="second-pass-program">
-      <uniform name="CoordsTexture1" link="coords-texture-1" />
-      <uniform name="CoordsTexture2" link="coords-texture-2" />
-      <uniform name="VolumeTexture1" link="volume-texture-1" />
-      <uniform name="VolumeTexture2" link="volume-texture-2" />
-      <uniform name="MVPMatrix" usage="modelviewprojection" />
-      <instance of="intersection-group" />
-    </use>
-  </framebuffer>
+<cull faces="front" />
+<framebuffer>
+  <attachment usage="color" link="coords-texture-1" />
+  <use program="primary-coords-program">
+    <group id="intersection-group">
+      <booleanAnd of="cube-1 cube-2" />
+    </group>
+  </use>
+</framebuffer>
+<framebuffer>
+  <attachment usage="color" link="coords-texture-2" />
+  <use program="secondary-coords-program">
+    <instance of="intersection-group" />
+  </use>
+</framebuffer>
+<cull faces="back" />
+<framebuffer>
+  <attachment usage="color" link="results-texture" />
+  <use program="second-pass-program">
+    <uniform name="CoordsTexture1" link="coords-texture-1" />
+    <uniform name="CoordsTexture2" link="coords-texture-2" />
+    <uniform name="VolumeTexture1" link="volume-texture-1" />
+    <uniform name="VolumeTexture2" link="volume-texture-2" />
+    <uniform name="MVPMatrix" usage="modelviewprojection" />
+    <instance of="intersection-group" />
+  </use>
+</framebuffer>
 \end{Verbatim}
 
 The Boolean operations required by the two approaches were implemented as two

@@ -4,8 +4,10 @@
 \setlength{\pdfpageheight}{11in}
 \usepackage{booktabs}
 \usepackage{graphicx}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{fancyvrb}
+\usepackage{listings}
 \usepackage{pgfplots}
 
 \begin{document}
@@ -669,12 +671,18 @@ scene for nodes with a specific ID.  Nodes can also register themselves as {\em
 listeners} of other nodes by implementing the {\tt NodeListener} interface and
 passing a pointer to the node's {\tt addNodeListener} method.
 
-The XML below shows how the second pass of the first approach is rendered.
-Notice that the render graph supports basic instancing through the {\em group}
-and {\em instance} nodes.  When an instance node is visited, it simply traverses
-the group it points to.  Complex behavior can be achieved with nested groups.
+The XML in listing \ref{listing:xml-of-second-pass} shows how the second pass of
+the first approach is rendered.  Notice that the render graph supports basic
+instancing through the {\em group} and {\em instance} nodes.  When an instance
+node is visited, it simply traverses the group it points to.  Complex behavior
+can be achieved with nested groups.
 
-\begin{Verbatim}[fontsize=\small]
+\lstset{language=XML}
+\lstset{markfirstintag=true}
+\lstset{showstringspaces=false}
+\lstset{caption=XML of second pass for first approach.}
+\lstset{label=listing:xml-of-second-pass}
+\begin{lstlisting}[frame=single,float]
 <cull faces="front" />
 <framebuffer>
   <attachment usage="color" link="coords-texture-1" />
@@ -702,7 +710,7 @@ the group it points to.  Complex behavior can be achieved with nested groups.
     <instance of="intersection-group" />
   </use>
 </framebuffer>
-\end{Verbatim}
+\end{lstlisting}
 
 The Boolean operations required by the two approaches were implemented as two
 separate nodes.  Currently both nodes take two cubes, which are assumed to be

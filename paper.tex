@@ -818,24 +818,43 @@ ends up being rendered behind the red piece on the right.}
 The performance of each approach was measured by using a simple frame counter
 showing the number of frames rendered in the previous second.  The tests were
 run on three different machines with a variety of operating systems (Linux, Mac
-OS X) and video cards (ATI, NVIDIA).  Table \ref{performance-table} shows the
-results.
+OS X) and video cards (ATI, NVIDIA).  Figure 7.3 shows the results with one
+hundred samples.
 
-\begin{table}
-  \centering
-  \begin{tabular}{ l r r r }
-    \toprule
-    Approach & Macbook & Desktop & Workstation\\
-    \midrule
-    Boolean XOR & 12 & 4 & 38 \\
-    Depth-Masking & 12 & 4 & 37 \\
-    General Slicing & 12 & 3 & 32 \\
-    Optimized Slicing & 3 & 3 & 35 \\
-    \bottomrule
-  \end{tabular}
-  \caption{Performance measurements}
-  \label{performance-table}
-\end{table}
+\begin{figure}
+\label{overall-performance-chart}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    xbar,
+    xmin=0,
+    xlabel=Frames Per Second,
+    enlarge y limits=0.2,
+    symbolic y coords={Optimized Slicing, General Slicing, Depth-Masking, Boolean XOR},
+    ytick=data
+]
+\addplot coordinates {
+    (2,General Slicing)
+    (12,Optimized Slicing)
+    (12,Depth-Masking)
+    (12,Boolean XOR)
+};
+\addplot coordinates {
+    (32,General Slicing)
+    (35,Optimized Slicing)
+    (37,Depth-Masking)
+    (38,Boolean XOR)
+};
+\addplot coordinates {
+    (3,General Slicing)
+    (3,Optimized Slicing)
+    (4,Depth-Masking)
+    (4,Boolean XOR)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Performance of approaches on three different systems with 100 samples.}
+\end{figure}
 
 Furthermore, a variety of sampling rates were used to determine how each
 approach scales as the number of samples taken increases.  Figure

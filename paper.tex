@@ -420,7 +420,7 @@ afterwards.
 \section{Boolean AND with Depth-Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer
-masking.  The basic idea is render the part of the volume directly behind the
+masking.  The basic idea is to render the part of the volume directly behind the
 intersection, render the intersection itself, and then render the part of the
 volume directly in front of the intersection.  Finally the area of the
 intersection is masked off and everything else is drawn depth-sorted with

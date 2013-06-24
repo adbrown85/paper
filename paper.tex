@@ -53,7 +53,16 @@ For many years the computing community has created software to visualize data
 from medical and scientific equipment.  Normally the data is returned as a
 three-dimensional grid of values.  This grid is called a volume, and the
 individual values are named voxels, similar to how the elements of a picture are
-called pixels.
+called pixels.  Figure \ref{representations} shows two different representations
+of a volume.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{representations.pdf}
+\caption{Representations of a volume.  One can think of a volume as a 3D grid of
+voxels or as a stack of 2D images.}
+\label{representations}
+\end{figure}
 
 Volumes produced by such equipment often become quite large, and at first
 computers had a difficult time displaying the data in real time.  Early work in

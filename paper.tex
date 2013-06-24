@@ -136,7 +136,16 @@ texture coordinates, or perhaps modify its normal vector.  The second part of
 the pipeline that can be replaced is towards the end, where fragments are being
 shaded.  Fragment shaders generally change the color of the object or how it is
 illuminated.  Many times they look up values stored in textures, which are
-generally one, two, or three dimensional images.
+generally one, two, or three dimensional images.  Figure \ref{fig:xmas} shows
+the results of a simple fragment shader.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{xmas.png}
+\caption{Simple fragment shader coloring the left side of a face red and the
+right side green.}
+\label{fig:xmas}
+\end{figure}
 
 Since there are always many fragments generated in rendering an image, designers
 have devoted much of the hardware to processing them.  Therefore fragment

@@ -417,7 +417,7 @@ correctly between passes, each pass must start with the results of the previous
 pass.  The results of all the passes cannot be simply blended together
 afterwards.
 
-\section{Boolean AND with Depth Buffer Masking}
+\section{Boolean AND with Depth-Masking}
 
 The first approach uses a Boolean AND operation combined with depth-buffer
 masking.  The basic idea is render the part of the volume directly behind the
@@ -430,8 +430,8 @@ blending enabled.
 \centering
 \includegraphics[width=0.8\textwidth]{boolean-and.pdf}
 \caption{
-Top-down view of rendering intersecting volumes using the Boolean AND with depth
-buffer masking approach.  First the part of the volume directly behind the
+Top-down view of rendering intersecting volumes using the Boolean AND with
+depth-masking approach.  First the part of the volume directly behind the
 intersection, colored red, is rendered.  Next the intersection, colored green,
 is rendered.  Then the the part of the volume directly in front of the
 intersection, colored blue, is rendered.  Finally the depth buffer is masked off

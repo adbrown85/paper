@@ -833,9 +833,9 @@ created.  Basically rather than using uniform variables to switch textures as
 would normally be done, the optimized variation stores the texture with each
 vertex instead.  While it requires a fairly significant amount of extra storage,
 using vertex attributes allows all the slices to be transferred to the card at
-once.  The result is a considerable performance boost, similar to how it is
-generally faster to transfer one large file across a network then many small
-ones.
+once.  The result is a considerable performance boost on some systems, similar
+to how it is generally faster to transfer one large file across a network then
+many small ones.
 
 As shown the Boolean-based approaches generally outperformed the two variants of
 the slicing method.  The difference between the frame rates becomes more clear

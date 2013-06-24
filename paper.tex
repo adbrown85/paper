@@ -720,16 +720,16 @@ scene for nodes with a specific ID.  Nodes can also register themselves as {\em
 listeners} of other nodes by implementing the {\tt NodeListener} interface and
 passing a pointer to the node's {\tt addNodeListener} method.
 
-The XML in listing \ref{listing:xml-of-second-pass} shows how the second pass of
-the first approach is rendered.  Notice that the render graph supports basic
-instancing through the {\em group} and {\em instance} nodes.  When an instance
-node is visited, it simply traverses the group it points to.  Complex behavior
-can be achieved with nested groups.
+The XML in listing \ref{listing:xml-of-second-pass} shows how the second pass
+for the depth-masking approach is rendered.  Notice that the render graph
+supports basic instancing through the {\em group} and {\em instance} nodes.
+When an instance node is visited, it simply traverses the group it points to.
+Complex behavior can be achieved with nested groups.
 
 \lstset{language=XML}
 \lstset{markfirstintag=true}
 \lstset{showstringspaces=false}
-\lstset{caption=XML of second pass for first approach.}
+\lstset{caption=XML of second pass for depth-masking approach.}
 \lstset{captionpos=b}
 \lstset{label=listing:xml-of-second-pass}
 \begin{lstlisting}[frame=single,float]

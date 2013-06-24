@@ -441,10 +441,6 @@ colored yellow are rendered.
 \label{boolean-and}
 \end{figure}
 
-It is mostly GPU-based, only requiring that the Boolean operation be performed
-on the CPU.  While there is relatively less work on the CPU, it does require a
-significant amount of passes.
-
 The first step in this approach is to bind all the textures.  There are two for
 the volumes, two for storing the texture coordinates of the back faces of the
 cubes, and one for storing results between passes.  The last three textures will
@@ -648,10 +644,6 @@ first and third passes may not be run.
   \item Activate shader for rendering results
   \item Render both cubes
 \end{enumerate}
-
-It is mostly CPU-based, since it requires both Boolean operations to be done on
-the CPU.  The extra work on the CPU results in less rendering passes, however.
-The pseudocode for the approach is shown below.
 
 % ==============
 % Implementation

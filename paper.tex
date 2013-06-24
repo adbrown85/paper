@@ -349,13 +349,29 @@ applying the inverse model view matrix to the points and using them as indices
 into the volume.  A transfer function converts the values to colors, and each is
 blended into the framebuffer at the fragment’s position.  Figure
 \ref{fragment-ray-casting} gives a depiction of the process, with green and red
-circles representing fragments.
+circles representing fragments.  Figures \ref{fig:first-pass-of-kruger-method}
+and \ref{fig:second-pass-of-kruger-method} show the first and second passes of
+the Kruger method.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\textwidth]{fragment-ray-casting.pdf}
 \caption{Ray-casting by fragments.}
 \label{fragment-ray-casting}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{back-faces.png}
+\caption{First pass of Kruger method.}
+\label{fig:first-pass-of-kruger-method}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{kruger.png}
+\caption{Second pass of Kruger method.}
+\label{fig:second-pass-of-kruger-method}
 \end{figure}
 
 The simplest acceleration technique inherent to ray-casting is early ray

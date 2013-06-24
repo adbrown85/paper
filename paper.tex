@@ -725,8 +725,16 @@ axis-aligned.  {\tt BooleanAndNode} finds the intersection of the two cubes by
 finding the minimums and maximums of the cubes in world space.  {\tt
 BooleanXorNode} does the same, but then uses a variation of the well-known
 Sutherland-Hodgman polyline-clipping algorithm to break up the cubes into pieces
-around the intersection.  Both nodes use the {\tt NodeListener} interface to
-only update their geometry when the cubes move.
+around the intersection, as shown in figure \ref{clipping}.  Both nodes use the
+{\tt NodeListener} interface to only update their geometry when the cubes move.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{clipping.pdf}
+\caption{Variation of Sutherland-Hodgman clipping algorithm in Boolean XOR
+implementation.}
+\label{clipping}
+\end{figure}
 
 All of the libraries can be compiled as shared libraries using GCC on Linux and
 Mac OS X.  Some libraries require {\em Poco} for text and XML utilities.  {\em

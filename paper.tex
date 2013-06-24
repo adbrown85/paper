@@ -732,11 +732,21 @@ can be achieved with nested groups.
 The Boolean operations required by the two approaches were implemented as two
 separate nodes.  Currently both nodes take two cubes, which are assumed to be
 axis-aligned.  {\tt BooleanAndNode} finds the intersection of the two cubes by
-finding the minimums and maximums of the cubes in world space.  {\tt
-BooleanXorNode} does the same, but then uses a variation of the well-known
-Sutherland-Hodgman polyline-clipping algorithm to break up the cubes into pieces
-around the intersection, as shown in figure \ref{clipping}.  Both nodes use the
-{\tt NodeListener} interface to only update their geometry when the cubes move.
+finding the minimums and maximums of the cubes in world space, as shown in
+listing \ref{listing:boolean-and}.  {\tt BooleanXorNode} does the same, but then
+uses a variation of the well-known Sutherland-Hodgman polyline-clipping
+algorithm to break up the cubes into pieces around the intersection, as shown in
+figure \ref{clipping}.  Both nodes use the {\tt NodeListener} interface to only
+update their geometry when the cubes move.
+
+\lstset{language=C++}
+\lstset{caption=Boolean AND implementation.}
+\lstset{captionpos=b}
+\lstset{label=listing:boolean-and}
+\begin{lstlisting}[frame=single,float]
+Vec4 min = max(c1.min, c2.min);
+Vec4 max = min(c1.max, c2.max);
+\end{lstlisting}
 
 \begin{figure}
 \centering
